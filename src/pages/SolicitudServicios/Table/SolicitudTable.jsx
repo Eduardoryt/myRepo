@@ -143,13 +143,27 @@ export function SolicitudTable({ }) {
     let sortableSolicitudes = [...filteredSolicitudes];
     if (sortConfig.key !== null) {
       sortableSolicitudes.sort((a, b) => {
-        if (a[sortConfig.key] < b[sortConfig.key]) {
-          return sortConfig.direction === 'asc' ? -1 : 1;
+        if (sortConfig.key === 'estado') {
+          // Ordenar por nombre del estado en orden alfabético
+          const estadoA = a.estado ? a.estado.nombre.toLowerCase() : '';
+          const estadoB = b.estado ? b.estado.nombre.toLowerCase() : '';
+          if (estadoA < estadoB) {
+            return sortConfig.direction === 'asc' ? -1 : 1;
+          }
+          if (estadoA > estadoB) {
+            return sortConfig.direction === 'asc' ? 1 : -1;
+          }
+          return 0;
+        } else {
+          // Ordenar por otras claves (folio, área, etc.)
+          if (a[sortConfig.key] < b[sortConfig.key]) {
+            return sortConfig.direction === 'asc' ? -1 : 1;
+          }
+          if (a[sortConfig.key] > b[sortConfig.key]) {
+            return sortConfig.direction === 'asc' ? 1 : -1;
+          }
+          return 0;
         }
-        if (a[sortConfig.key] > b[sortConfig.key]) {
-          return sortConfig.direction === 'asc' ? 1 : -1;
-        }
-        return 0;
       });
     }
     return sortableSolicitudes;

@@ -3,7 +3,7 @@ import { useSoli } from "../../context/SolicitudContext";
 import { useAuth } from "../../context/authContext";
 import "../../css/solicitud.css";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { ImFileEmpty } from "react-icons/im";
 import { useForm } from "react-hook-form";
@@ -14,6 +14,7 @@ import { FaCheckCircle } from "react-icons/fa";
 
 export const AbonoSolicitud = () => {
     const { id } = useParams();
+    const navigate = useNavigate();
 
     const { unasoli, getunSolitud, RealizarAbono } = useSoli();
     const { user } = useAuth();
@@ -54,7 +55,7 @@ export const AbonoSolicitud = () => {
 
     useEffect(() => {
         verificarCompletados();
-    }, [items]); // <- Ejecuta verificarCompletados cuando items cambia
+    }, [items]);
 
 
     const verificarCompletados = () => {
@@ -119,12 +120,14 @@ export const AbonoSolicitud = () => {
                     confirmButtonText: "OK",
                 });
             } else {
-                setDatosCargados(false)
+                setDatosCargados(false);
                 Swal.fire({
                     title: "Completado!",
                     text: response.mensaje,
                     icon: "success",
                     confirmButtonText: "Cool",
+                }).then(() => {
+                    navigate('/soli');
                 });
             }
         } catch (error) {
@@ -302,7 +305,7 @@ export const AbonoSolicitud = () => {
                             type="submit"
                             className="bg-green-500 hover:bg-green-700 text-white font-bold mt px-6 py-3 rounded-md border border-black"
                         >
-                            Realizar Entregar
+                            Realizar Entrega
                         </button>
                     </div>
                 )}

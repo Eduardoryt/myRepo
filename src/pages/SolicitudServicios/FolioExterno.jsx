@@ -138,6 +138,7 @@ export const FolioExterno = () => {
                                 type="text"
                                 id="folioExterno"
                                 name="folioExterno"
+                                maxLength={4}
                                 className="w-full p-3 border border-gray-400 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
                                 {...register("folioExterno")}
                             />

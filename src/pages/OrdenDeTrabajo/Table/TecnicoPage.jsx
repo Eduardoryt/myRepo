@@ -95,14 +95,28 @@ export const TecnicoPage = () => {
     setFilteredSolicitudes(results);
     setCurrentPage(1);
   }, [searchTerm, informes]);
-
+  
   const sortedSolicitudes = useMemo(() => {
     let sortableSolicitudes = [...filteredSolicitudes];
-    if (sortConfig.key !== null) {
+    if (sortConfig.key === 'estado') {
+      sortableSolicitudes.sort((a, b) => {
+        // Obtener los nombres del estado, manejando casos en que el estado puede no estar definido
+        const estadoA = a.informe && a.informe.estado ? a.informe.estado.nombre.toLowerCase() : '';
+        const estadoB = b.informe && b.informe.estado ? b.informe.estado.nombre.toLowerCase() : '';
+  
+        if (estadoA < estadoB) {
+          return sortConfig.direction === 'asc' ? -1 : 1;
+        }
+        if (estadoA > estadoB) {
+          return sortConfig.direction === 'asc' ? 1 : -1;
+        }
+        return 0;
+      });
+    } else {
       sortableSolicitudes.sort((a, b) => {
         const aKey = a.informe ? a.informe[sortConfig.key] : a[sortConfig.key];
         const bKey = b.informe ? b.informe[sortConfig.key] : b[sortConfig.key];
-
+  
         if (aKey < bKey) {
           return sortConfig.direction === 'asc' ? -1 : 1;
         }
@@ -114,6 +128,7 @@ export const TecnicoPage = () => {
     }
     return sortableSolicitudes;
   }, [filteredSolicitudes, sortConfig]);
+  
 
   const requestSort = (key) => {
     let direction = 'asc';
@@ -132,7 +147,6 @@ export const TecnicoPage = () => {
   const clearSearch = () => {
     setSearchTerm("");
   };
-
 
   if (loading) {
     return (
@@ -173,18 +187,14 @@ export const TecnicoPage = () => {
     setFilteredSolicitudes(filteredByDate);
   };
 
-
-
   const handleEditClick = () => {
     const dataWithId = estadosTotales.map(item => ({
-      id: item.id, // Suponiendo que `_id` es el campo de identificador
+      id: item.id,
       nombre: item.nombre
-      // Añade otros campos necesarios para la edición
     }));
     setEditedData(dataWithId);
     setIsEditing(true);
   };
-
 
   const handleSaveClick = async () => {
 
@@ -216,7 +226,6 @@ export const TecnicoPage = () => {
     setEditedData(newData);
   };
 
-
   return (
     <div className="overflow-x-auto p-4">
       <div className="mb-1 flex justify-between items-center">
@@ -241,7 +250,8 @@ export const TecnicoPage = () => {
             >
               <svg className="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 8.586l3.707-3.707a1 1 0 011.414 1.414L11.414 10l3.707 3.707a1 1 0 01-1.414 1.414L10 11.414l-3.707 3.707a1 1 0 01-1.414-1.414L8.586 10 4.879 6.293a1 1 0 011.414-1.414L10 8.586z" clipRule="evenodd"></path>
-              </svg>            </button>
+              </svg>
+            </button>
           )}
         </div>
         <button onClick={abrirModal} className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -272,7 +282,7 @@ export const TecnicoPage = () => {
             <Th sortable={false} extraClass="w-2/12">DESCRIPCION DEL SERVICIO</Th>
             <Th onClick={() => requestSort('tecnicos.nombreCompleto')} sortable={true}>TÉCNICO</Th>
             <Th sortable={false} >EVIDENCIAS</Th>
-            <Th onClick={() => requestSort('estado.nombre')} sortable={true}>ESTADO</Th>
+            <Th onClick={() => requestSort('estado')} sortable={true}>ESTADO</Th>
             <Th sortable={false}>ACCIONES</Th>
             <Th sortable={false}>INFORME</Th>
           </tr>
